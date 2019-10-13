@@ -1,0 +1,10 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/docker:19.03
+    working_directory: ~/repo
+    steps:
+      - run: echo $DOCKER_HUB_ACCESS_TOKEN | docker login --username tuanpa1993 --password-stdin
+      - run: docker build
+      - run: docker push tuanpa1993/volca-api:latest
