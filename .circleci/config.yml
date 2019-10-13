@@ -1,10 +1,49 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/docker:19.03
+    machine: true
     working_directory: ~/repo
     steps:
+      - checkout
+      - run: pwd
+      - run: ls -la
       - run: echo $DOCKER_HUB_ACCESS_TOKEN | docker login --username tuanpa1993 --password-stdin
-      - run: docker build
+      - run: docker build -t tuanpa1993/volca-api:latest -t tuanpa1993/volca-api:$CIRCLE_SHA1 .
       - run: docker push tuanpa1993/volca-api:latest
+      - run: docker push tuanpa1993/volca-api:$CIRCLE_SHA1
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      - GOOGLE_PROJECT_ID: "argon-triode-243908"
+      - GOOGLE_COMPUTE_ZONE: "us-central1-a"
+      - GOOGLE_CLUSTER_NAME: "your-first-cluster-1"
+    steps:
+      - checkout
+      - run: 
+          name: Setup Google Cloud SDK
+          command: |
+            apt-get install -qq -y gettext
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            gcloud --quiet container clusters get-credentials ${GOOGLE_CLUSTER_NAME}
+      - setup_remote_docker
+      - run: 
+          name: Deploy to Kubernetes
+          command: |
+            apt-get install -qq -y gettext
+            export VOLCA_API_TAG=$CIRCLE_SHA1
+            envsubst < ./kubernetes.yaml | kubectl apply -f -
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

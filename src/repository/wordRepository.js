@@ -2,20 +2,20 @@ const { Firestore } = require("@google-cloud/firestore");
 
 const firestore = new Firestore();
 
-export async function addWord(word) {
-  const collectionRef = firestore.collection('words');
+const addWord = async word => {
+  const collectionRef = firestore.collection("words");
   await collectionRef.add({
     word,
     forgotten: false,
-    ignored: false,
-  })
-}
+    ignored: false
+  });
+};
 
-export async function findWords({ forgotten = false, ignored = false}) {
+const findWords = async ({ forgotten = false, ignored = false }) => {
   // Obtain a document reference.
   //   const document = firestore.doc('words/LQpMvceQwKCtNaNKw4Tw');
-  const snapshot = await firestore.collection('words').get();
-  return snapshot.docs().map(doc => doc.data())
+  const snapshot = await firestore.collection("words").get();
+  return snapshot.docs.map(doc => doc.data());
 
   //   // Enter new data into the document.
   //   await document.set({
@@ -38,4 +38,6 @@ export async function findWords({ forgotten = false, ignored = false}) {
   //   // Delete the document.
   //   await document.delete();
   //   console.log('Deleted the document');
-}
+};
+
+module.exports = { addWord, findWords };
