@@ -1,10 +1,11 @@
+const uuid = require('uuid/v4')
 const { Firestore } = require("@google-cloud/firestore");
 
 const firestore = new Firestore();
 
-const addWord = async word => {
+const createWord = async word => {
   const collectionRef = firestore.collection("words");
-  await collectionRef.add({
+  await collectionRef.doc(uuid()).set({
     word,
     forgotten: false,
     ignored: false
@@ -40,4 +41,4 @@ const findWords = async ({ forgotten = false, ignored = false }) => {
   //   console.log('Deleted the document');
 };
 
-module.exports = { addWord, findWords };
+module.exports = { createWord, findWords };
