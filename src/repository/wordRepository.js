@@ -1,4 +1,4 @@
-const uuid = require('uuid/v4')
+const uuid = require("uuid/v4");
 const { Firestore } = require("@google-cloud/firestore");
 
 const firestore = new Firestore();
@@ -12,10 +12,14 @@ const createWord = async word => {
   });
 };
 
-const findWords = async ({ forgotten = false, ignored = false }) => {
-  // Obtain a document reference.
-  //   const document = firestore.doc('words/LQpMvceQwKCtNaNKw4Tw');
-  const snapshot = await firestore.collection("words").get();
+const findWords = async reqQuery => {
+  const query = firestore.collection("words");
+
+  Object.entries(reqQuery, ([key, value]) => {
+    query = query.where(key, "==", value);
+  });
+
+  const snapshot = await query.get();
   return snapshot.docs.map(doc => doc.data());
 
   //   // Enter new data into the document.

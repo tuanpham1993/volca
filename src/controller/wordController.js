@@ -1,8 +1,9 @@
 const shuffle = require("shuffle-array");
 const { createWord, findWords } = require("../repository/wordRepository");
 
-const getWords = async (_, res) => {
-  res.json(shuffle(await findWords({})));
+const getWords = async (req, res) => {
+  const { query } = req;
+  res.json(shuffle(await findWords(query)));
 };
 
 const addWord = async (req, res) => {
