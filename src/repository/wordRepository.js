@@ -7,20 +7,15 @@ const createWord = async word => {
   const collectionRef = firestore.collection("words");
   await collectionRef.doc(uuid()).set({
     word,
-    forgotten: false,
-    ignored: false
+    rating: [],
+    note: ""
   });
 };
 
 const findWords = async reqQuery => {
   const query = firestore.collection("words");
-
-  Object.entries(reqQuery, ([key, value]) => {
-    query = query.where(key, "==", value);
-  });
-
   const snapshot = await query.get();
-  return snapshot.docs.map(doc => doc.data());
+  return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
   //   // Enter new data into the document.
   //   await document.set({
@@ -45,4 +40,14 @@ const findWords = async reqQuery => {
   //   console.log('Deleted the document');
 };
 
-module.exports = { createWord, findWords };
+const findWord = async id => {
+  const docRef = firestore.doc(`words/${id}`);
+  return docRef.data();
+};
+
+const updateWord = async (id, data) => {
+  const docRef = firestore.doc(`words/${id}`);
+  await docRef.update(data);
+};
+
+module.exports = { createWord, findWord, findWords, updateWord };
