@@ -42,7 +42,7 @@ const findWords = async reqQuery => {
 
 const findWord = async id => {
   const docRef = firestore.doc(`words/${id}`);
-  return docRef.data();
+  return (await docRef.get()).data();
 };
 
 const updateWord = async (id, data) => {

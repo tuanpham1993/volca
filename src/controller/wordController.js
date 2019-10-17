@@ -1,6 +1,5 @@
 const isEmpty = require("lodash/isEmpty");
 const reduce = require("lodash/reduce");
-const length = require("lodash/length");
 const {
   createWord,
   findWord,
@@ -11,12 +10,17 @@ const {
 const appendPoint = word => {
   if (isEmpty(word.rating)) {
     // Not have any rating, 0 point
-    return 0;
+    return {
+      ...word,
+      point: 0
+    };
   }
 
-  const point =
-    reduce(word.rating, (prev, item, index) => prev + item * (index + 1), 0) /
-    word.rating.length;
+  const point = reduce(
+    word.rating,
+    (prev, item, index) => prev + item * (index + 1),
+    0
+  );
 
   return {
     ...word,
@@ -33,11 +37,11 @@ const sortFunc = (a, b) => {
     return 1;
   }
 
-  if (length(a.rating) < length(b.rating)) {
+  if (a.rating.length < b.rating.length) {
     return -1;
   }
 
-  if (length(a.rating) > length(b.rating)) {
+  if (a.rating.length > b.rating.length) {
     return 1;
   }
 
@@ -45,7 +49,7 @@ const sortFunc = (a, b) => {
 };
 
 const appendRating = (word, rating) => {
-  if (length(word.rating) < 5) {
+  if (word.rating.length < 5) {
     word.rating.push(rating);
   } else {
     word.rating.shift().push(rating);
@@ -54,7 +58,7 @@ const appendRating = (word, rating) => {
 
 const getWords = async (req, res) => {
   const { query } = req;
-  const words = await findWords(query);
+  const words = (await findWords(query)).map(word => appendPoint(word));
 
   res.json(words.sort(sortFunc));
 };
@@ -75,10 +79,13 @@ const addWord = async (req, res) => {
 };
 
 const note = async (req, res) => {
-  const { id = req.params };
-  const { body: { note }} = req;
-  await updateWord(id, { note })
-}
+  const { id } = req.params;
+  const {
+    body: { note }
+  } = req;
+  await updateWord(id, { note });
+  res.status(200).send();
+};
 
 const rate = async (req, res) => {
   const { id } = req.params;
@@ -88,7 +95,7 @@ const rate = async (req, res) => {
   const word = await findWord(id);
 
   appendRating(word, rating);
-  await updateWord(body.id, word);
+  await updateWord(id, word);
 
   res.status(200).send();
 };

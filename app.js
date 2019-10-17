@@ -18,9 +18,9 @@ app.get("/words", getWords);
 
 app.post("/words", addWord);
 
-app.post("words/:id/rate", rate);
+app.post("/words/:id/rate", rate);
 
-app.post("words/:id/note", note);
+app.post("/words/:id/note", note);
 
 app.all("/", (_, res) => res.status(200).send());
 
