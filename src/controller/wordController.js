@@ -57,24 +57,27 @@ const appendRating = (word, rating) => {
 };
 
 const getWords = async (req, res) => {
-  const { query } = req;
-  const words = (await findWords(query)).map(word => appendPoint(word));
+  const { query, username } = req;
+  const words = (await findWords(query, username)).map(word =>
+    appendPoint(word)
+  );
 
   res.json(words.sort(sortFunc));
 };
 
 const addWord = async (req, res) => {
   const {
-    body: { word }
+    body: { word },
+    username
   } = req;
 
-  const words = await findWords({});
+  const words = await findWords({}, username);
   if (words.some(({ word: current }) => word === current)) {
     res.status(400).send();
     return;
   }
 
-  await createWord(word);
+  await createWord(word, username);
   res.status(200).send();
 };
 

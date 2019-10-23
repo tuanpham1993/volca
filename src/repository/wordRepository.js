@@ -3,18 +3,21 @@ const { Firestore } = require("@google-cloud/firestore");
 
 const firestore = new Firestore();
 
-const createWord = async word => {
+const createWord = async (word, username) => {
   const collectionRef = firestore.collection("words");
   await collectionRef.doc(uuid()).set({
     word,
     rating: [],
-    note: ""
+    note: "",
+    username
   });
 };
 
-const findWords = async reqQuery => {
-  const query = firestore.collection("words");
+const findWords = async (reqQuery, username) => {
+  let query = firestore.collection("words");
+  query = query.where("username", "==", username);
   const snapshot = await query.get();
+
   return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
   //   // Enter new data into the document.
