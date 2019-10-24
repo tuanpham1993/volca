@@ -8,7 +8,7 @@ const {
   note,
   rate
 } = require("./src/controller/wordController");
-const { getUsers } = require("./src/controller/userController");
+const { addUser, getUsers } = require("./src/controller/userController");
 
 const app = express();
 app.use(
@@ -37,6 +37,8 @@ app.post("/words/:id/rate", rate);
 app.post("/words/:id/note", note);
 
 app.get("/users", getUsers);
+
+app.post("/users", addUser);
 
 app.all("/", (_, res) => res.status(200).send());
 
