@@ -53,4 +53,9 @@ const updateWord = async (id, data) => {
   await docRef.update(data);
 };
 
-module.exports = { createWord, findWord, findWords, updateWord };
+const deleteWord = async id => {
+  const docRef = firestore.doc(`words/${id}`);
+  await docRef.delete();
+};
+
+module.exports = { createWord, deleteWord, findWord, findWords, updateWord };

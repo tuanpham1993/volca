@@ -2,6 +2,7 @@ const isEmpty = require("lodash/isEmpty");
 const reduce = require("lodash/reduce");
 const {
   createWord,
+  deleteWord: delWord,
   findWord,
   findWords,
   updateWord
@@ -81,6 +82,12 @@ const addWord = async (req, res) => {
   res.status(200).send();
 };
 
+const deleteWord = async (req, res) => {
+  const { id } = req.params;
+  await delWord(id);
+  res.status(204).send();
+};
+
 const note = async (req, res) => {
   const { id } = req.params;
   const {
@@ -103,4 +110,4 @@ const rate = async (req, res) => {
   res.status(200).send();
 };
 
-module.exports = { addWord, getWords, note, rate };
+module.exports = { addWord, deleteWord, getWords, note, rate };

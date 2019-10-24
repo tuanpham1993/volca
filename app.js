@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 
 const {
   addWord,
+  deleteWord,
   getWords,
   note,
   rate
@@ -35,6 +36,8 @@ app.post("/words", addWord);
 app.post("/words/:id/rate", rate);
 
 app.post("/words/:id/note", note);
+
+app.delete("/words/:id", deleteWord);
 
 app.get("/users", getUsers);
 
